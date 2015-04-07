@@ -27,22 +27,22 @@ function draw_field {
 	done
 }
 
-if [ -a 'fifo' ]
+if [ -a 'X' ]
 then
+	rm X
 	me='O'
 	opp='X'
 	my_turn=false
+	echo "Waiting for connection..."
 	echo 'r' > fifo
 else
+	mknod X p
 	me='X'
 	opp='O'
 	my_turn=true
-	mknod fifo p
+	mknod fifo p 2>/dev/null
 	echo "Waiting for connection..."
-	while [ -z $mes ]
-	do
-		mes=$(cat fifo)
-	done
+	mes=$(cat fifo)
 fi
 
 arr=(e e e e e e e e e)
@@ -99,10 +99,7 @@ do
 			break
 		fi
 		echo "Wait for opponent"
-		while [ -z $c]
-		do
-			c=$(cat fifo)
-		done
+		c=$(cat fifo)
 		arr[$c]=$opp
 		let "cnt = cnt + 1"
 		c=''
